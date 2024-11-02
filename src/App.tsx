@@ -32,7 +32,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Toaster position="bottom-right" />
+      <Toaster richColors position="top-right" />
       <Routes>
         <Route
           path="/login"

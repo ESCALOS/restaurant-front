@@ -44,7 +44,7 @@ const Login: React.FC = () => {
     } else if (role === "ROLE_WAITER") {
       navigate("/");
     } else {
-      navigate("/default-dashboard");
+      navigate("/forbidden");
     }
   };
 
