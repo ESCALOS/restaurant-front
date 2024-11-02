@@ -57,21 +57,12 @@ const Login: React.FC = () => {
       height="100vh"
       bgcolor="background.default"
     >
-      {/* Logo */}
-      <img
-        src="/logo.webp"
-        alt="Logo"
-        width="100"
-        height="100"
-        style={{ marginBottom: "1rem" }}
-      />
+      <img src="/logo.webp" alt="Logo" width="150" height="150" />
 
-      {/* Nombre del local */}
-      <Typography variant="h4" color="text.secondary" gutterBottom>
+      <Typography variant="h4" color="text.primary" gutterBottom>
         El Chaufero
       </Typography>
 
-      {/* Caja del formulario */}
       <Box
         bgcolor="#322E2B"
         borderRadius={2}

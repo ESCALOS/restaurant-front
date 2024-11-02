@@ -12,10 +12,17 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { ListItem, ListItemText, ListItemButton, Tooltip } from "@mui/material";
+import {
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  Tooltip,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { adminLinkRoutes } from "../constants";
-import { Logout } from "@mui/icons-material";
+import { AccountCircle, Logout } from "@mui/icons-material";
 import { useAuthStore } from "../store/authStore";
 
 const drawerWidth = 200;
@@ -106,6 +113,14 @@ export default function Layout() {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -147,9 +162,39 @@ export default function Layout() {
           >
             <img src="/logo.webp" alt="Logo" width="50" />
           </div>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             El Chaufero
           </Typography>
+          <div>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              sx={{ mt: "35px" }}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>Cambiar contraseña</MenuItem>
+              <MenuItem onClick={logout}>Salir</MenuItem>
+            </Menu>
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
