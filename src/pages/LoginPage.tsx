@@ -30,11 +30,17 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const setToken = useAuthStore((state) => state.setToken);
   const onSubmit = async (data: LoginFormInputs) => {
+    const toastId = toast.loading("Iniciando sesión...");
     const response = await login(data);
     if (response.error) {
-      toast.error(response.message || "Error de autenticación");
+      toast.error(response.message || "Error de autenticación", {
+        id: toastId,
+      });
       return;
     }
+    toast.success("Sesión iniciada correctamente", {
+      id: toastId,
+    });
     const token = response.data.token;
     setToken(token);
     const { role } = useAuthStore.getState().user || {};

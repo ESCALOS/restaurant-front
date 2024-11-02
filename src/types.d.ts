@@ -12,12 +12,12 @@ export interface Table {
 export interface User {
   id: number;
   username: string;
-  document_number: string;
+  document_number: "DNI" | "CE" | "PP";
   document_type: string;
   name: string;
   is_enabled: boolean;
   phone: string;
-  role: string;
+  role: "ADMIN" | "WAITER" | "STOREKEEPER";
   created_at: string;
   updated_at: string;
 }

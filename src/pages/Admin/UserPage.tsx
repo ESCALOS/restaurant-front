@@ -13,9 +13,9 @@ import { Add } from "@mui/icons-material";
 import { User } from "../../types";
 import { useUserFilter } from "../../hooks/useUserFilter";
 import CardUser from "../../sections/user/CardUser";
-import Confirm from "../../components/ConfirmModal";
-import { useModal } from "../../hooks/useModal";
 import { useState } from "react";
+import ConfirmModal from "../../components/ConfirmModal";
+import { useConfirmModal } from "../../hooks/useConfirmModal";
 
 function UserPage() {
   const { data, isLoading } = useQuery({
@@ -24,12 +24,13 @@ function UserPage() {
   });
 
   const {
-    open: openModalConfirm,
-    handleOpen: handleOpenConfirm,
-    handleClose: handleCloseConfirm,
-  } = useModal();
+    open: isOpenConfirm,
+    description: descriptionConfirm,
+    openConfirmModal,
+    closeConfirmModal,
+  } = useConfirmModal();
 
-  const [onConfirm, setOnConfirm] = useState<() => void>(() => {});
+  const [onSave, setonSave] = useState<() => void>(() => {});
 
   const users = data?.data ?? [];
 
@@ -41,20 +42,27 @@ function UserPage() {
     filteredUsers,
   } = useUserFilter(users);
 
+  const handleOpenModalCreateUser = () => {
+    console.log("Abriendo modal de creación de usuario");
+  };
+
   // Función para manejar la edición del usuario
   const handleEdit = (user: User) => {
     // Aquí podrías abrir un modal o redirigir a una página de edición
     console.log("Editar usuario:", user);
   };
 
-  const handleOpenConfirmModal = (action: () => Promise<void> | void) => {
-    setOnConfirm(() => action); // Guarda la función del hijo para ejecutarla al confirmar
-    handleOpenConfirm();
+  const handleOpenModal = (
+    action: () => Promise<void> | void,
+    description: string
+  ) => {
+    setonSave(() => action);
+    openConfirmModal(description);
   };
 
   const onToggleEnable = async () => {
-    handleCloseConfirm();
-    if (onConfirm) await onConfirm();
+    closeConfirmModal();
+    if (onSave) await onSave();
   };
 
   return (
@@ -69,7 +77,12 @@ function UserPage() {
         }}
       >
         <Typography variant="h4">Lista de usuarios</Typography>
-        <Button variant="contained" color="primary" startIcon={<Add />}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          onClick={handleOpenModalCreateUser}
+        >
           Crear Usuario
         </Button>
       </Box>
@@ -108,18 +121,16 @@ function UserPage() {
             <CardUser
               key={user.id}
               user={user}
-              onToggleEnable={handleOpenConfirm}
               onEdit={handleEdit}
-              onRequestToggle={handleOpenConfirmModal}
+              onRequestToggle={handleOpenModal}
             />
           ))}
         </Grid2>
       )}
-      <Confirm
-        open={openModalConfirm}
-        handleClose={handleCloseConfirm}
-        title="¿Estás seguro de que deseas eliminar este usuario?"
-        description="Esta acción si se puede deshacer."
+      <ConfirmModal
+        open={isOpenConfirm}
+        handleClose={closeConfirmModal}
+        description={descriptionConfirm}
         onConfirm={onToggleEnable}
       />
     </Box>

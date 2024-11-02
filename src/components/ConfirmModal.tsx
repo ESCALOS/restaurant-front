@@ -4,44 +4,39 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  IconButton,
 } from "@mui/material";
+
+import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {
   open: boolean;
   handleClose: () => void;
-  title: string;
   description: string;
   onConfirm: () => void;
 };
 
-function ConfirmModal({
-  open,
-  handleClose,
-  onConfirm,
-  title,
-  description,
-}: Props) {
+function ConfirmModal({ open, handleClose, description, onConfirm }: Props) {
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="responsive-dialog-title"
-    >
-      <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
+    <Dialog open={open} onClose={handleClose}>
+      <IconButton
+        aria-label="close"
+        onClick={handleClose}
+        sx={(theme) => ({
+          position: "absolute",
+          right: 8,
+          top: 8,
+          color: theme.palette.grey[500],
+        })}
+      >
+        <CloseIcon />
+      </IconButton>
       <DialogContent>
-        <DialogContentText sx={{ color: "white" }}>
+        <DialogContentText sx={{ color: "white", pr: "20px" }}>
           {description}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button
-          autoFocus
-          onClick={handleClose}
-          sx={{ color: "white", backgroundColor: "red" }}
-        >
-          Cancelar
-        </Button>
+      <DialogActions sx={{ justifyContent: "center", display: "flex" }}>
         <Button
           onClick={onConfirm}
           autoFocus
