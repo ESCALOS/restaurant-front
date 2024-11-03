@@ -7,22 +7,24 @@ import {
   Typography,
 } from "@mui/material";
 import { Edit, ToggleOn, ToggleOff } from "@mui/icons-material";
-import { User } from "../../types";
-import { toggleUser } from "../../services/UserService";
+import { User } from "../../../types";
+import { toggleUser } from "../../../services/UserService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import UserForm from "./UserForm";
 
 type Props = {
   user: User;
-  onEdit: (user: User) => void;
+  openModal: (children: ReactNode) => void;
+  closeModal: () => void;
   onRequestToggle: (
     action: () => Promise<void> | void,
     description: string
   ) => void;
 };
 
-function CardUser({ user, onEdit, onRequestToggle }: Props) {
+function UserCard({ user, openModal, onRequestToggle, closeModal }: Props) {
   const queryClient = useQueryClient();
   const [toastId, setToastId] = useState<string | number | undefined>(
     undefined
@@ -64,7 +66,6 @@ function CardUser({ user, onEdit, onRequestToggle }: Props) {
     },
   });
 
-  // Función para habilitar/deshabilitar el usuario
   const handleToggleEnable = async () => {
     if (isLoadingToggle) return;
 
@@ -76,12 +77,24 @@ function CardUser({ user, onEdit, onRequestToggle }: Props) {
     onRequestToggle(handleToggleEnable, description);
   };
 
+  const handleEdit = () => {
+    openModal(<UserForm user={user} closeModal={closeModal} />);
+  };
+
+  const roleMap = {
+    ADMIN: "Administrador",
+    WAITER: "Mesero",
+    STOREKEEPER: "Almacenero",
+  };
+
   return (
     <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={user.id}>
       <Card variant="outlined">
         <CardContent>
           <Typography variant="h6">{user.name}</Typography>
-          <Typography color="text.primary">@{user.username}</Typography>
+          <Typography color="text.primary">
+            @{user.username} - {roleMap[user.role] || "Rol desconocido"}
+          </Typography>
           <Typography variant="body2">
             Documento: {user.document_type} - {user.document_number}
           </Typography>
@@ -92,7 +105,7 @@ function CardUser({ user, onEdit, onRequestToggle }: Props) {
             variant="contained"
             color="primary"
             startIcon={<Edit />}
-            onClick={() => onEdit(user)}
+            onClick={handleEdit}
           >
             Editar
           </Button>
@@ -111,4 +124,4 @@ function CardUser({ user, onEdit, onRequestToggle }: Props) {
   );
 }
 
-export default CardUser;
+export default UserCard;

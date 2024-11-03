@@ -1,4 +1,3 @@
-// services/authService.ts
 import axios from "axios";
 import instance from "../libs/axios";
 

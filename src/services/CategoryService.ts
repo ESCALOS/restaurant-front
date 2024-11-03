@@ -1,42 +1,35 @@
-// services/authService.ts
 import axios from "axios";
 import instance from "../libs/axios";
-import { User } from "../types";
+import { Category } from "../types";
 
-// Definimos el tipo de respuesta para la función getUsers
-interface GetUsersResponse {
-  data?: User[];
+interface GetCategoriesResponse {
+  data?: Category[];
   error: boolean;
   status: number;
   message: string;
 }
 
-interface GetUserResponse {
-  data?: User;
+interface GetCategoryResponse {
+  data?: Category;
   error: boolean;
   status: number;
   message: string;
 }
 
-interface UserRequest {
+interface CategoryRequest {
   id?: number;
-  username: string;
-  document_number: string;
-  document_type: string;
   name: string;
-  phone: string;
-  role: string;
 }
 
-// Declaramos la función con el tipo de retorno GetUserResponse
-export const getUsers = async (): Promise<GetUsersResponse> => {
+// Declaramos la función con el tipo de retorno GetCategoryResponse
+export const getCategories = async (): Promise<GetCategoriesResponse> => {
   try {
-    const response = await instance.get("users");
+    const response = await instance.get("categories");
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuarios recuperados",
+      message: "Categorías recuperadas",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -54,18 +47,16 @@ export const getUsers = async (): Promise<GetUsersResponse> => {
   }
 };
 
-export const createUser = async (
-  user: UserRequest
-): Promise<GetUserResponse> => {
+export const createCategory = async (
+  category: CategoryRequest
+): Promise<GetCategoryResponse> => {
   try {
-    const response = await instance.post("users", user);
-
-    console.log("creado", user);
+    const response = await instance.post("categories", category);
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuario creado correctamente",
+      message: "Categoría creada correctamente",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -83,18 +74,16 @@ export const createUser = async (
   }
 };
 
-export const updateUser = async (
-  user: UserRequest
-): Promise<GetUserResponse> => {
+export const updateCategory = async (
+  category: CategoryRequest
+): Promise<GetCategoryResponse> => {
   try {
-    const response = await instance.put(`users/${user.id}`, user);
-
-    console.log("actualizado", user);
+    const response = await instance.put(`categories/${category.id}`, category);
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuario actualizado correctamente",
+      message: "Categoría actualizada correctamente",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -112,18 +101,14 @@ export const updateUser = async (
   }
 };
 
-export const toggleUser = async (user: User) => {
+export const deleteCategory = async (category: Category) => {
   try {
-    const response = await instance.patch(
-      `users/${user.id}/enabled`,
-      {},
-      { params: { isEnabled: !user.is_enabled } }
-    );
+    const response = await instance.delete(`categories/${category.id}`);
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuario habilitado/deshabilitado correctamente",
+      message: "Categoría eliminada correctamente",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {

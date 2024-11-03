@@ -10,12 +10,14 @@ import {
   Switch,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { User } from "../../types";
 import { useUserFilter } from "../../hooks/useUserFilter";
-import CardUser from "../../sections/user/CardUser";
+import UserCard from "../../sections/admin/user/UserCard";
 import { useState } from "react";
 import ConfirmModal from "../../components/ConfirmModal";
 import { useConfirmModal } from "../../hooks/useConfirmModal";
+import { useModal } from "../../hooks/useModal";
+import Modal from "../../components/Modal";
+import UserForm from "../../sections/admin/user/UserForm";
 
 function UserPage() {
   const { data, isLoading } = useQuery({
@@ -42,14 +44,10 @@ function UserPage() {
     filteredUsers,
   } = useUserFilter(users);
 
-  const handleOpenModalCreateUser = () => {
-    console.log("Abriendo modal de creación de usuario");
-  };
+  const { open, children: childrenModal, openModal, closeModal } = useModal();
 
-  // Función para manejar la edición del usuario
-  const handleEdit = (user: User) => {
-    // Aquí podrías abrir un modal o redirigir a una página de edición
-    console.log("Editar usuario:", user);
+  const handleOpenModalCreateUser = () => {
+    openModal(<UserForm closeModal={closeModal} />);
   };
 
   const handleOpenModal = (
@@ -118,10 +116,11 @@ function UserPage() {
       ) : (
         <Grid2 container spacing={2}>
           {filteredUsers.map((user) => (
-            <CardUser
+            <UserCard
               key={user.id}
               user={user}
-              onEdit={handleEdit}
+              openModal={openModal}
+              closeModal={closeModal}
               onRequestToggle={handleOpenModal}
             />
           ))}
@@ -133,6 +132,9 @@ function UserPage() {
         description={descriptionConfirm}
         onConfirm={onToggleEnable}
       />
+      <Modal open={open} handleClose={closeModal}>
+        {childrenModal}
+      </Modal>
     </Box>
   );
 }
