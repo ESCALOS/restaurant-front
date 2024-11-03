@@ -1,42 +1,38 @@
-// services/authService.ts
 import axios from "axios";
 import instance from "../libs/axios";
-import { User } from "../types";
+import { Dish } from "../types";
 
-// Definimos el tipo de respuesta para la función getUsers
-interface GetUsersResponse {
-  data?: User[];
+interface GetDishesResponse {
+  data?: Dish[];
   error: boolean;
   status: number;
   message: string;
 }
 
-interface GetUserResponse {
-  data?: User;
+interface GetDishResponse {
+  data?: Dish;
   error: boolean;
   status: number;
   message: string;
 }
 
-interface UserRequest {
+interface DishRequest {
   id?: number;
-  username: string;
-  document_number: string;
-  document_type: string;
   name: string;
-  phone: string;
-  role: string;
+  description: string;
+  price: number;
+  category_id: number;
 }
 
-// Declaramos la función con el tipo de retorno GetUserResponse
-export const getUsers = async (): Promise<GetUsersResponse> => {
+// Declaramos la función con el tipo de retorno GetDishResponse
+export const getDishes = async (): Promise<GetDishesResponse> => {
   try {
-    const response = await instance.get("users");
+    const response = await instance.get("dishes");
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuarios recuperados",
+      message: "Dishes recuperados",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -54,16 +50,16 @@ export const getUsers = async (): Promise<GetUsersResponse> => {
   }
 };
 
-export const createUser = async (
-  user: UserRequest
-): Promise<GetUserResponse> => {
+export const createDish = async (
+  dish: DishRequest
+): Promise<GetDishResponse> => {
   try {
-    const response = await instance.post("users", user);
+    const response = await instance.post("dishes", dish);
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuario creado correctamente",
+      message: "Dish creado correctamente",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -81,16 +77,16 @@ export const createUser = async (
   }
 };
 
-export const updateUser = async (
-  user: UserRequest
-): Promise<GetUserResponse> => {
+export const updateDish = async (
+  dish: DishRequest
+): Promise<GetDishResponse> => {
   try {
-    const response = await instance.put(`users/${user.id}`, user);
+    const response = await instance.put(`dishes/${dish.id}`, dish);
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuario actualizado correctamente",
+      message: "Dish actualizado correctamente",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -108,18 +104,14 @@ export const updateUser = async (
   }
 };
 
-export const toggleUser = async (user: User) => {
+export const deleteDish = async (dish: Dish) => {
   try {
-    const response = await instance.patch(
-      `users/${user.id}/enabled`,
-      {},
-      { params: { isEnabled: !user.is_enabled } }
-    );
+    const response = await instance.delete(`dishes/${dish.id}`);
     return {
       data: response.data,
       error: false,
       status: 200,
-      message: "Usuario habilitado/deshabilitado correctamente",
+      message: "Dish eliminado correctamente",
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {

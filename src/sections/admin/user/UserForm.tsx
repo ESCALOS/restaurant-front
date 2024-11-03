@@ -97,8 +97,7 @@ const UserForm: React.FC<Props> = ({ user, closeModal }) => {
         error.message || "Ocurrió un error al cambiar el estado del usuario."
       );
     },
-    onSettled: (data) => {
-      console.log(data);
+    onSettled: () => {
       // Invalidar la caché de todas formas para tener datos frescos
       queryClient.invalidateQueries({
         queryKey: ["users"],

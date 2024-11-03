@@ -2,41 +2,35 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { Product } from "../../../types";
+import { Dish } from "../../../types";
 import { useState } from "react";
 import { toast } from "sonner";
-import { createProduct, updateProduct } from "../../../services/ProductService";
+import { createDish, updateDish } from "../../../services/DishService";
 import { Box, Button, MenuItem, TextField, Typography } from "@mui/material";
 import { getCategories } from "../../../services/CategoryService";
 
 type Props = {
-  product?: Product;
+  dish?: Dish;
   closeModal: () => void;
 };
 
-const ProductSchema = z.object({
+const DishSchema = z.object({
   name: z
     .string()
-    .min(3, "El nombre del producto debe tener al menos 3 caracteres"),
+    .min(3, "El nombre del plato debe tener al menos 3 caracteres"),
 
   description: z
     .string()
-    .min(3, "La descripción del producto debe tener al menos 3 caracteres"),
+    .min(3, "La descripción del plato debe tener al menos 3 caracteres"),
 
-  price: z.coerce
-    .number()
-    .positive("El precio del producto debe ser mayor a 0"),
+  price: z.coerce.number().positive("El precio del plato debe ser mayor a 0"),
 
-  min_stock: z.coerce
-    .number()
-    .nonnegative("El stock debe ser mayor o igual a 0"),
-  stock: z.coerce.number().nonnegative("El stock debe ser mayor o igual a 0"),
   category_id: z.coerce.number().min(1, "La categoría es requerida"),
 });
 
-type ProductFormInputs = z.infer<typeof ProductSchema>;
+type DishFormInputs = z.infer<typeof DishSchema>;
 
-function ProductForm({ product, closeModal }: Props) {
+function DishForm({ dish, closeModal }: Props) {
   const [toastId, setToastId] = useState<string | number | undefined>(
     undefined
   );
@@ -52,19 +46,18 @@ function ProductForm({ product, closeModal }: Props) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ProductFormInputs>({
+  } = useForm<DishFormInputs>({
     defaultValues: {
-      name: product?.name || "",
-      description: product?.description || "",
-      price: product?.price || 0,
-      min_stock: product?.min_stock || 0,
-      stock: product?.stock || 0,
+      name: dish?.name || "",
+      description: dish?.description || "",
+      price: dish?.price || 0,
+      category_id: dish?.category.id || 0,
     },
-    resolver: zodResolver(ProductSchema),
+    resolver: zodResolver(DishSchema),
   });
 
-  const { mutate: mutateProduct } = useMutation({
-    mutationFn: product ? updateProduct : createProduct,
+  const { mutate: mutateDish } = useMutation({
+    mutationFn: dish ? updateDish : createDish,
     onMutate: () => {
       // Mostrar toast de carga y guardar su ID para después actualizarlo
       const toastId = toast("Procesando...", {
@@ -76,17 +69,17 @@ function ProductForm({ product, closeModal }: Props) {
     onSuccess: async (data) => {
       // Invalida la caché para obtener los datos actualizados
       await queryClient.invalidateQueries({
-        queryKey: ["products"],
+        queryKey: ["dishes"],
       });
 
       if (data.error) {
-        toast.error(data.message || "Ocurrió un error al crear el producto.");
+        toast.error(data.message || "Ocurrió un error al crear el plato.");
         return;
       }
 
       // Reemplazar el mensaje de carga por uno de éxito
-      const message = `El producto ${data.data?.name} ha sido ${
-        product ? "actualizado" : "creado"
+      const message = `El plato ${data.data?.name} ha sido ${
+        dish ? "actualizado" : "creado"
       } correctamente`;
 
       toast.success(message);
@@ -94,21 +87,21 @@ function ProductForm({ product, closeModal }: Props) {
     onError: (error) => {
       // Reemplazar el mensaje de carga por uno de error
       toast.error(
-        error.message || "Ocurrió un error al cambiar el estado del producto."
+        error.message || "Ocurrió un error al cambiar el estado del plato."
       );
     },
     onSettled: () => {
       // Invalidar la caché de todas formas para tener datos frescos
       queryClient.invalidateQueries({
-        queryKey: ["products"],
+        queryKey: ["dishes"],
       });
       // Opcionalmente, remover el toast si quedó abierto
       if (toastId) toast.dismiss(toastId);
     },
   });
-  const onSubmit = (data: ProductFormInputs) => {
-    mutateProduct({
-      id: product?.id,
+  const onSubmit = (data: DishFormInputs) => {
+    mutateDish({
+      id: dish?.id,
       ...data,
     });
   };
@@ -117,7 +110,7 @@ function ProductForm({ product, closeModal }: Props) {
       {category.name}
     </MenuItem>
   ));
-  const categoriesDefaultValue = product?.category.id ? product.category.id : 0; // Obtener el ID del primer elemento de la lista de categorías
+  const categoriesDefaultValue = dish?.category.id ? dish.category.id : 0; // Obtener el ID del primer elemento de la lista de categorías
 
   return (
     <Box
@@ -132,9 +125,9 @@ function ProductForm({ product, closeModal }: Props) {
         justifyContent: "center",
       }}
     >
-      <Typography variant="h5">Registro de Producto</Typography>
+      <Typography variant="h5">Registro de Dish</Typography>
       <TextField
-        label="Nombre del Producto"
+        label="Nombre del Dish"
         {...register("name")}
         error={!!errors.name}
         helperText={errors.name?.message}
@@ -166,20 +159,6 @@ function ProductForm({ product, closeModal }: Props) {
         <MenuItem value={0}>Seleccionar categoría</MenuItem>
         {categoriesOptions}
       </TextField>
-      <TextField
-        label="Stock mínimo"
-        {...register("min_stock")}
-        error={!!errors.min_stock}
-        helperText={errors.min_stock?.message}
-        variant="filled"
-      />
-      <TextField
-        label="Stock actual"
-        {...register("stock")}
-        error={!!errors.stock}
-        helperText={errors.stock?.message}
-        variant="filled"
-      />
       <Button type="submit" variant="contained" color="primary">
         Registrar
       </Button>
@@ -187,4 +166,4 @@ function ProductForm({ product, closeModal }: Props) {
   );
 }
 
-export default ProductForm;
+export default DishForm;
