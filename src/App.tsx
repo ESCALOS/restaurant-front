@@ -17,7 +17,7 @@ const CategoryPage = lazy(() => import("./pages/Admin/CategoryPage"));
 const ProductsPage = lazy(() => import("./pages/Admin/ProductPage"));
 const DishesPage = lazy(() => import("./pages/Admin/DishPage"));
 const ReportPage = lazy(() => import("./pages/Admin/ReportPage"));
-const TableWaiterPage = lazy(() => import("./pages/Waiter/TablePage"));
+const WaiterPage = lazy(() => import("./pages/WaiterPage"));
 
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -121,7 +121,7 @@ function App() {
             path="/waiter"
             element={
               <Suspense fallback={<div>Loading...</div>}>
-                <TableWaiterPage />
+                <WaiterPage />
               </Suspense>
             }
           />
